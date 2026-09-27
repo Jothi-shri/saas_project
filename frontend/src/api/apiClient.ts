@@ -1,4 +1,5 @@
 import { authService } from "./authService";
+import { resolveApiUrl } from "./apiBase";
 import { useSaaSStore } from "../store";
 
 let refreshing: Promise<boolean> | null = null;
@@ -50,7 +51,8 @@ export async function apiClient<T = any>(
   if (body) headers["Content-Type"] = "application/json";
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const res = await fetch(path, {
+  const url = resolveApiUrl(path);
+  const res = await fetch(url, {
     method: method ?? (body ? "POST" : "GET"),
     headers,
     body: body ? JSON.stringify(body) : undefined,
@@ -62,7 +64,7 @@ export async function apiClient<T = any>(
     if (refreshed) {
       const newToken = useSaaSStore.getState().accessToken;
       if (newToken) headers["Authorization"] = `Bearer ${newToken}`;
-      const retry = await fetch(path, {
+      const retry = await fetch(url, {
         method: method ?? (body ? "POST" : "GET"),
         headers,
         body: body ? JSON.stringify(body) : undefined,

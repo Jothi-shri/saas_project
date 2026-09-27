@@ -1,0 +1,12 @@
+# Netlify deployment for the Vite/React frontend.
+# Backend (FastAPI) is hosted separately; its URL is injected at build
+# time via the VITE_API_URL environment variable (see frontend/.env.example).
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

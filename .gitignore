@@ -30,3 +30,8 @@ __pycache__/
 *.sqlite3
 saas.db
 .env
+.env.local
+.env.production
+frontend/.env
+frontend/.env.local
+frontend/.env.production

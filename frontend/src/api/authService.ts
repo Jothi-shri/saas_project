@@ -1,3 +1,5 @@
+import { resolveApiUrl } from "./apiBase";
+
 export interface AuthUser {
   id: string;
   name: string;
@@ -19,15 +21,13 @@ const ADMIN_SESSION_KEYS = [
   "isAdminSession",
 ] as const;
 
-const API_BASE = ((import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_URL ?? "").trim().replace(/\/$/, "");
-
 function apiUrl(apiEndpoint: string): string {
-  return API_BASE ? `${API_BASE}${apiEndpoint}` : apiEndpoint;
+  return resolveApiUrl(apiEndpoint);
 }
 
 function friendlyNetworkError(status: number): string {
   if (status === 502 || status === 503 || status === 504) {
-    return "Cannot reach the API server (gateway error). Is the backend running on :8000?";
+    return "Cannot reach the API server (gateway error). Is the backend reachable?";
   }
   return `Request failed (${status})`;
 }
@@ -42,7 +42,7 @@ async function post<T>(apiEndpoint: string, requestPayload: unknown): Promise<T>
       credentials: "include",
     });
   } catch {
-    throw new Error("Unable to reach the server. Is the API running on :8000?");
+    throw new Error("Unable to reach the server. Is the API reachable?");
   }
   const apiResponsePayload = await apiResponse.json().catch(() => null);
   if (!apiResponse.ok) {

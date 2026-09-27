@@ -38,6 +38,15 @@ class Settings:
     cors_allow_methods: list[str] = ["*"]
     cors_allow_headers: list[str] = ["*"]
 
+    frontend_url: str = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
+
+    password_reset_ttl_minutes: int = int(os.getenv("PASSWORD_RESET_TTL_MINUTES", "60"))
+
+    email_provider: str = os.getenv("EMAIL_PROVIDER", "console")
+    resend_api_key: str = os.getenv("RESEND_API_KEY", "")
+    mail_from: str = os.getenv("MAIL_FROM", "SaaS Platform <no-reply@localhost>")
+    email_from_name: str = os.getenv("EMAIL_FROM_NAME", "SaaS Platform")
+
     def validate(self) -> None:
         if not self.database_url:
             raise RuntimeError(
