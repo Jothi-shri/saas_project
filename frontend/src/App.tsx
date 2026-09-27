@@ -28,8 +28,6 @@ export default function App() {
     useSaaSStore.getState().initializeAuth();
   }, []);
   useEffect(() => {
-    // Keep sidebar/topbar notification badges database-driven on every page,
-    // not only after visiting /notifications.
     if (!userId) return;
     let cancelled = false;
     apiClient("/api/notifications")

@@ -21,10 +21,6 @@ const ADMIN_SESSION_KEYS = [
 
 const API_BASE = ((import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_URL ?? "").trim().replace(/\/$/, "");
 
-// Use same-origin relative URLs by default so requests go through the Vite
-// dev/preview proxy (no CORS, no 127.0.0.1 vs localhost mismatch).
-// Only use absolute VITE_API_URL when explicitly configured.
-
 function apiUrl(apiEndpoint: string): string {
   return API_BASE ? `${API_BASE}${apiEndpoint}` : apiEndpoint;
 }

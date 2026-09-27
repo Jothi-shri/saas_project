@@ -1,7 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { AlertCircle, Inbox, Loader2 } from "lucide-react";
 
-/* Scroll-reveal wrapper: adds .is-visible when entering viewport */
 export function Reveal({
   children,
   className = "",

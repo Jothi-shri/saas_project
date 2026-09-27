@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-
 class AnalyticsResponse(BaseModel):
     totalProjects: int = 0
     completedTasks: int = 0

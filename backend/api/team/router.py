@@ -17,16 +17,13 @@ from .schemas import TeamMemberCreate
 
 router = APIRouter(prefix="/api/team", tags=["team"])
 
-
 def _next_tm_id() -> str:
     return f"TM-{secrets.token_hex(4).upper()}"
-
 
 @router.get("")
 def list_team(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     members = db.scalars(select(TeamMember).order_by(TeamMember.created_at.desc())).all()
     return {"members": [m.to_dict() for m in members], "teamMembers": [m.to_dict() for m in members]}
-
 
 @router.get("/{member_id}")
 def get_member(member_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -34,7 +31,6 @@ def get_member(member_id: str, user: User = Depends(get_current_user), db: Sessi
     if not m:
         raise HTTPException(404, "Team member not found")
     return {"member": m.to_dict()}
-
 
 @router.post("")
 def invite_member(payload: TeamMemberCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -64,7 +60,6 @@ def invite_member(payload: TeamMemberCreate, user: User = Depends(get_current_us
         return {"member": member.to_dict()}
     raise HTTPException(500, "Could not invite member")
 
-
 @router.put("/{member_id}")
 def update_member(member_id: str, payload: dict, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     m = db.get(TeamMember, member_id)
@@ -88,7 +83,6 @@ def update_member(member_id: str, payload: dict, user: User = Depends(get_curren
         raise HTTPException(409, "Email already exists")
     db.refresh(m)
     return {"member": m.to_dict()}
-
 
 @router.delete("/{member_id}")
 def delete_member(member_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):

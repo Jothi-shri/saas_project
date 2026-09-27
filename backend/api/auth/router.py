@@ -38,26 +38,20 @@ __all__ = [
     "current_user",
 ]
 
-
 def make_token(user: User, ttl_hours: float | None = None) -> str:
     return create_access_token(user, ttl_hours=ttl_hours)
-
 
 def make_refresh_token(user: User) -> str:
     return create_refresh_token(user)
 
-
 def _next_user_id(db: Session) -> str:
     return f"USR-{secrets.token_hex(3).upper()}"
-
 
 def current_user(*args, **kwargs):
     return get_current_user(*args, **kwargs)
 
-
 def _refresh_cookie_max_age() -> int:
     return int(settings.jwt_refresh_ttl_hours * 3600)
-
 
 def _set_refresh_cookie(response: Response, refresh_token: str) -> None:
     response.set_cookie(
@@ -71,7 +65,6 @@ def _set_refresh_cookie(response: Response, refresh_token: str) -> None:
         domain=settings.refresh_cookie_domain,
     )
 
-
 def _clear_refresh_cookie(response: Response) -> None:
     response.delete_cookie(
         key=settings.refresh_cookie_name,
@@ -81,7 +74,6 @@ def _clear_refresh_cookie(response: Response) -> None:
         httponly=settings.refresh_cookie_httponly,
         samesite=settings.refresh_cookie_samesite,
     )
-
 
 def _auth_response(user: User, response: Response) -> dict:
     """Return access token + user, set refresh token as HttpOnly cookie."""
@@ -93,7 +85,6 @@ def _auth_response(user: User, response: Response) -> dict:
         "token_type": "bearer",
         "user": user.public(),
     }
-
 
 @router.post("/register")
 def register(body: RegisterIn, response: Response, db: Session = Depends(get_db)):
@@ -127,7 +118,6 @@ def register(body: RegisterIn, response: Response, db: Session = Depends(get_db)
     db.refresh(user)
     return _auth_response(user, response)
 
-
 @router.post("/login")
 def login(body: LoginIn, response: Response, db: Session = Depends(get_db)):
     user = db.scalar(
@@ -138,7 +128,6 @@ def login(body: LoginIn, response: Response, db: Session = Depends(get_db)):
     if user.status != "Active":
         raise HTTPException(403, "Account is inactive")
     return _auth_response(user, response)
-
 
 @router.post("/admin-login")
 def admin_login(body: AdminLoginIn, response: Response, db: Session = Depends(get_db)):
@@ -162,7 +151,6 @@ def admin_login(body: AdminLoginIn, response: Response, db: Session = Depends(ge
     if user.role != "Admin":
         raise HTTPException(403, "Account does not have admin privileges")
     return _auth_response(user, response)
-
 
 @router.post("/refresh")
 def refresh(
@@ -207,13 +195,11 @@ def refresh(
     access_token = jwt.encode(access_payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
     return {"access_token": access_token, "token_type": "bearer"}
 
-
 @router.post("/logout")
 def logout(response: Response):
     """Clear refresh cookie and instruct frontend to clear memory state."""
     _clear_refresh_cookie(response)
     return {"message": "Logged out"}
-
 
 @router.get("/me")
 def me(user: User = Depends(get_current_user)):

@@ -11,10 +11,6 @@ from ..auth.security import get_current_user
 
 router = APIRouter(prefix="/api/settings", tags=["settings"])
 
-# In-memory fallback (if no DB table for settings). For now return echo and store nothing.
-# Could be extended to persist to users table or dedicated settings table.
-# This keeps API DB-backed (validates user exists via DB) and not hard-coded.
-
 @router.get("")
 def get_settings(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return {
@@ -29,7 +25,6 @@ def get_settings(user: User = Depends(get_current_user), db: Session = Depends(g
         },
         "user": user.public(),
     }
-
 
 @router.put("")
 def update_settings(payload: dict, user: User = Depends(get_current_user), db: Session = Depends(get_db)):

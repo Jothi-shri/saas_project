@@ -16,16 +16,13 @@ from .schemas import TaskCreate
 
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
-
 def _next_task_id() -> str:
     return f"TSK-{secrets.token_hex(4).upper()}"
-
 
 def _parse_due_date(value: str | None) -> datetime | None:
     if not value:
         return None
     try:
-        # Accept ISO string or YYYY-MM-DD
         dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
@@ -33,12 +30,10 @@ def _parse_due_date(value: str | None) -> datetime | None:
     except Exception:
         return None
 
-
 @router.get("")
 def list_tasks(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     tasks = db.scalars(select(Task).order_by(Task.updated_at.desc())).all()
     return {"tasks": [t.to_dict() for t in tasks]}
-
 
 @router.get("/{task_id}")
 def get_task(task_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -46,7 +41,6 @@ def get_task(task_id: str, user: User = Depends(get_current_user), db: Session =
     if not task:
         raise HTTPException(404, "Task not found")
     return {"task": task.to_dict()}
-
 
 @router.post("")
 def create_task(payload: TaskCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -71,7 +65,6 @@ def create_task(payload: TaskCreate, user: User = Depends(get_current_user), db:
         return {"task": task.to_dict()}
     raise HTTPException(500, "Could not create task")
 
-
 @router.put("/{task_id}")
 def update_task(task_id: str, payload: dict, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     task = db.get(Task, task_id)
@@ -95,7 +88,6 @@ def update_task(task_id: str, payload: dict, user: User = Depends(get_current_us
     db.commit()
     db.refresh(task)
     return {"task": task.to_dict()}
-
 
 @router.delete("/{task_id}")
 def delete_task(task_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):

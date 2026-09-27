@@ -18,13 +18,11 @@ from ...db.models import User
 
 PBKDF2_ROUNDS = 200_000
 
-
 def hash_password(password: str) -> str:
     """PBKDF2-HMAC-SHA256 — stdlib only, no native deps."""
     salt = os.urandom(16)
     dk = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, PBKDF2_ROUNDS)
     return f"{salt.hex()}${dk.hex()}"
-
 
 def verify_password(password: str, stored: str) -> bool:
     try:
@@ -33,7 +31,6 @@ def verify_password(password: str, stored: str) -> bool:
     except (ValueError, TypeError):
         return False
     return hmac.compare_digest(dk.hex(), dk_hex)
-
 
 def create_access_token(user: User, ttl_hours: float | None = None) -> str:
     now = datetime.now(timezone.utc)
@@ -47,7 +44,6 @@ def create_access_token(user: User, ttl_hours: float | None = None) -> str:
     }
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
-
 def create_refresh_token(user: User) -> str:
     now = datetime.now(timezone.utc)
     payload = {
@@ -60,11 +56,9 @@ def create_refresh_token(user: User) -> str:
     }
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
-
 def decode_token(token: str) -> dict:
     """Decode and verify exp/iat; raises PyJWTError on invalid/expired."""
     return jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
-
 
 def get_current_user(
     authorization: str | None = Header(default=None),

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-
 class TeamMemberCreate(BaseModel):
     name: str
     email: str

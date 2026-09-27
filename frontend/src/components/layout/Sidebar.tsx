@@ -85,7 +85,6 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
         className={`fixed inset-y-0 left-0 z-40 flex flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] transition-[width,transform,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${widthCls} ${overlay} lg:sticky lg:h-screen lg:shrink-0`}
         aria-label="Sidebar"
       >
-        {/* Brand */}
         <div className="flex h-16 items-center justify-between gap-2 border-b border-[var(--sidebar-border)] px-3">
           <div className={`flex min-w-0 items-center gap-2.5 ${collapsed ? "w-full justify-center" : ""}`}>
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] text-[15px] font-extrabold tracking-tight text-white shadow-[0_4px_14px_-4px_var(--accent)]">
@@ -117,7 +116,6 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
           </button>
         </div>
 
-        {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-2 py-4" aria-label="Primary">
           <div className="space-y-6">
             {NAV_SECTIONS.map((section) => (
@@ -144,7 +142,6 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
           </div>
         </nav>
 
-        {/* User + logout */}
         <div className="border-t border-[var(--sidebar-border)] p-2.5">
           {authenticatedUser && (
             <div

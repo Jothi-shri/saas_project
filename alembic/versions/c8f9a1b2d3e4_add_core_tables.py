@@ -10,12 +10,10 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-
 revision: str = 'c8f9a1b2d3e4'
 down_revision: Union[str, Sequence[str], None] = '32dafe52adf8'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
-
 
 def upgrade() -> None:
     """Upgrade schema."""
@@ -85,7 +83,6 @@ def upgrade() -> None:
         sa.Column('timestamp', sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint('id'),
     )
-
 
 def downgrade() -> None:
     """Downgrade schema."""

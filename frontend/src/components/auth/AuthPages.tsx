@@ -67,7 +67,6 @@ function AuthShell({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 items-center justify-center p-6 sm:p-10">
         <div className="anim-scale w-full max-w-[440px]">
           <div className="card p-6 sm:p-8">
-            {/* Mobile brand */}
             <div className="mb-6 flex items-center gap-2.5 lg:hidden">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent)] text-base font-extrabold text-white">
                 S

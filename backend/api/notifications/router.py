@@ -15,16 +15,13 @@ from ..auth.security import get_current_user
 
 router = APIRouter(prefix="/api/notifications", tags=["notifications"])
 
-
 def _next_notif_id() -> str:
     return f"NTF-{secrets.token_hex(4).upper()}"
-
 
 @router.get("")
 def list_notifications(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     notifs = db.scalars(select(Notification).order_by(Notification.created_at.desc())).all()
     return {"notifications": [n.to_dict() for n in notifs]}
-
 
 @router.get("/{notif_id}")
 def get_notification(notif_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -32,7 +29,6 @@ def get_notification(notif_id: str, user: User = Depends(get_current_user), db: 
     if not n:
         raise HTTPException(404, "Notification not found")
     return {"notification": n.to_dict()}
-
 
 @router.post("")
 def create_notification(payload: dict, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -55,7 +51,6 @@ def create_notification(payload: dict, user: User = Depends(get_current_user), d
         return {"notification": n.to_dict()}
     raise HTTPException(500, "Could not create notification")
 
-
 @router.put("/{notif_id}")
 def update_notification(notif_id: str, payload: dict, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     n = db.get(Notification, notif_id)
@@ -73,7 +68,6 @@ def update_notification(notif_id: str, payload: dict, user: User = Depends(get_c
     db.refresh(n)
     return {"notification": n.to_dict()}
 
-
 @router.post("/mark-all-read")
 def mark_all_read(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     notifs = db.scalars(select(Notification).where(Notification.read == False)).all()  # noqa: E712
@@ -81,7 +75,6 @@ def mark_all_read(user: User = Depends(get_current_user), db: Session = Depends(
         n.read = True
     db.commit()
     return {"updated": len(notifs)}
-
 
 @router.delete("/{notif_id}")
 def delete_notification(notif_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):

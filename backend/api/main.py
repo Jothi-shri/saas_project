@@ -16,7 +16,6 @@ from .settings.router import router as settings_router
 from .activities.router import router as activities_router
 from .config import settings
 
-
 app = FastAPI(title="SaaS API", version="0.1.0")
 
 app.add_middleware(
@@ -38,11 +37,9 @@ app.include_router(notifications_router)
 app.include_router(settings_router)
 app.include_router(activities_router)
 
-
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
 
 @app.get("/")
 def root():

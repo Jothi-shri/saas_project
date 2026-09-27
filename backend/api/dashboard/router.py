@@ -16,19 +16,16 @@ from .schemas import DashboardStats
 
 router = APIRouter(prefix="/api", tags=["dashboard"])
 
-
 @router.get("/dashboard")
 def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     total_projects = db.scalar(select(func.count()).select_from(Project)) or 0
     completed_tasks = db.scalar(select(func.count()).select_from(Task).where(Task.status == "done")) or 0
     active_team_members = db.scalar(select(func.count()).select_from(TeamMember).where(TeamMember.status == "active")) or 0
-    # if no active, fallback to total team members
     if active_team_members == 0:
         active_team_members = db.scalar(select(func.count()).select_from(TeamMember)) or 0
     total_tasks = db.scalar(select(func.count()).select_from(Task)) or 0
     active_tasks = total_tasks - completed_tasks
 
-    # simple revenue growth derived: if projects>0 then projects*1.2 else 0
     revenue_growth = round((total_projects * 1.2) if total_projects else 0, 1)
 
     stats = DashboardStats(
@@ -38,11 +35,8 @@ def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(
         revenueGrowth=revenue_growth,
     ).model_dump()
 
-    # Also compute extended dashboard data for frontend
-    # Project overview with progress
     projects = db.scalars(select(Project).order_by(Project.updated_at.desc())).all()
     tasks = db.scalars(select(Task)).all()
-    # group tasks by project
     by_project = Counter()
     done_by_project = Counter()
     for t in tasks:
@@ -62,7 +56,6 @@ def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(
         elif progress >= 40:
             status = "In Progress"
         else:
-            # If no tasks, treat as In Progress if active else At Risk logic
             status = "At Risk" if progress < 20 and total > 0 else "In Progress"
             if total == 0:
                 status = "On Track"
@@ -77,7 +70,6 @@ def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(
             "avatar": avatar or "PR",
         })
 
-    # Task distribution
     cnt_todo = db.scalar(select(func.count()).select_from(Task).where(Task.status == "todo")) or 0
     cnt_in_progress = db.scalar(select(func.count()).select_from(Task).where(Task.status == "in_progress")) or 0
     cnt_review = 0  # no review status in model; keep 0 or map from in_progress?
@@ -89,28 +81,21 @@ def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(
         {"label": "Completed", "count": cnt_done, "color": "bg-emerald-500"},
     ]
 
-    # Task Analytics - tasks completed per weekday Mon-Fri
-    # Compute from Activity or Tasks updated_at? Use tasks completed grouped by weekday of updated_at
     weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     weekday_counts = {d: 0 for d in weekdays}
-    # Consider tasks done in last 7 days
     for t in tasks:
         if t.status == "done" and t.updated_at:
             wd = t.updated_at.strftime("%A")
             if wd in weekday_counts:
                 weekday_counts[wd] += 1
-    # if all zero, distribute current tasks to avoid empty chart
     if sum(weekday_counts.values()) == 0 and total_tasks > 0:
-        # Use deterministic pseudo distribution from total
         weekday_counts = {"Monday": max(1, cnt_todo//2), "Tuesday": max(1, cnt_in_progress), "Wednesday": max(1, cnt_done//3), "Thursday": max(2, cnt_done//2), "Friday": max(1, cnt_todo//3)}
 
     task_analytics = [{"day": d, "completed": weekday_counts[d]} for d in weekdays]
 
-    # Recent activity from Activity table
     activities = db.scalars(select(Activity).order_by(Activity.timestamp.desc()).limit(10)).all()
     recent_activity = []
     for a in activities:
-        # derive type for frontend mapping
         action_lower = a.action.lower()
         if "completed" in action_lower:
             typ = "completed"
@@ -120,7 +105,6 @@ def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(
             typ = "assigned"
         else:
             typ = "updated"
-        # timeAgo
         delta = datetime.now(timezone.utc) - a.timestamp if a.timestamp.tzinfo else timedelta(hours=1)
         seconds = int(delta.total_seconds())
         if seconds < 60:
@@ -143,9 +127,7 @@ def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(
             "taskId": a.task_id,
         })
 
-    # Upcoming tasks sorted by due_date
     upcoming_tasks_raw = db.scalars(select(Task).where(Task.due_date.isnot(None)).order_by(Task.due_date.asc()).limit(10)).all()
-    # if no due dates, fallback to tasks ordered by updated_at
     if not upcoming_tasks_raw:
         upcoming_tasks_raw = db.scalars(select(Task).order_by(Task.updated_at.desc()).limit(4)).all()
     upcoming = []
@@ -186,13 +168,11 @@ def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(
         "taskAnalytics": task_analytics,
         "recentActivity": recent_activity,
         "upcomingTasks": upcoming,
-        # also flat keys for backward compat
         "totalProjects": total_projects,
         "activeTasks": active_tasks,
         "teamMembers": active_team_members,
         "completedTasks": completed_tasks,
     }
-
 
 @router.get("/me")
 def api_me(user: User = Depends(get_current_user)):

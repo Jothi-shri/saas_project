@@ -64,7 +64,6 @@ export default function CommandPalette() {
   const tasks = useSaaSStore((s) => s.tasks);
   const teamMembers = useSaaSStore((s) => s.teamMembers);
 
-  // Global shortcut: Ctrl/Cmd + K toggles the palette.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
@@ -76,7 +75,6 @@ export default function CommandPalette() {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  // Reset + focus on open; lock body scroll; ensure searchable data is loaded from the API.
   useEffect(() => {
     if (!open) return;
     setQuery("");
@@ -103,7 +101,6 @@ export default function CommandPalette() {
           if (tasksData) s.setTasks(tasksData.tasks ?? []);
           if (teamData) s.setTeamMembers(teamData.members ?? teamData.teamMembers ?? []);
         } catch {
-          // Search simply covers whatever is already loaded; pages still work.
         } finally {
           setLoadingData(false);
         }

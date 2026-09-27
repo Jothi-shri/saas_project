@@ -16,17 +16,13 @@ from .schemas import ProjectCreate
 
 router = APIRouter(prefix="/api/projects", tags=["projects"])
 
-
 def _next_project_id() -> str:
     return f"PRJ-{secrets.token_hex(4).upper()}"
 
-
 @router.get("")
 def list_projects(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Show all projects (scoped to owner or all for demo). For real multi-tenant, filter by owner_id.
     projects = db.scalars(select(Project).order_by(Project.updated_at.desc())).all()
     return {"projects": [p.to_dict() for p in projects]}
-
 
 @router.get("/{project_id}")
 def get_project(project_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -35,10 +31,8 @@ def get_project(project_id: str, user: User = Depends(get_current_user), db: Ses
         raise HTTPException(404, "Project not found")
     return {"project": project.to_dict()}
 
-
 @router.post("")
 def create_project(payload: ProjectCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # simple revenue derivation for analytics: random deterministic based on name length
     revenue = payload.revenue if getattr(payload, "revenue", None) is not None else (len(payload.name) * 3500 + 8000)
     for _ in range(3):
         pid = _next_project_id()
@@ -57,7 +51,6 @@ def create_project(payload: ProjectCreate, user: User = Depends(get_current_user
         db.refresh(project)
         return {"project": project.to_dict()}
     raise HTTPException(500, "Could not create project")
-
 
 @router.put("/{project_id}")
 def update_project(project_id: str, payload: dict, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -79,7 +72,6 @@ def update_project(project_id: str, payload: dict, user: User = Depends(get_curr
     db.commit()
     db.refresh(project)
     return {"project": project.to_dict()}
-
 
 @router.delete("/{project_id}")
 def delete_project(project_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):

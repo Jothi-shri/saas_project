@@ -15,16 +15,13 @@ from ..auth.security import get_current_user
 
 router = APIRouter(prefix="/api/activities", tags=["activities"])
 
-
 def _next_activity_id() -> str:
     return f"ACT-{secrets.token_hex(4).upper()}"
-
 
 @router.get("")
 def list_activities(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     acts = db.scalars(select(Activity).order_by(Activity.timestamp.desc()).limit(50)).all()
     return {"activities": [a.to_dict() for a in acts], "activity": [a.to_dict() for a in acts]}
-
 
 @router.post("")
 def create_activity(payload: dict, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -45,7 +42,6 @@ def create_activity(payload: dict, user: User = Depends(get_current_user), db: S
         db.refresh(act)
         return {"activity": act.to_dict()}
     raise HTTPException(500, "Could not create activity")
-
 
 @router.delete("/{activity_id}")
 def delete_activity(activity_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):

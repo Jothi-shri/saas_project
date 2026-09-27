@@ -9,7 +9,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from .database import Base
 
-
 class User(Base):
     __tablename__ = "users"
 
@@ -38,7 +37,6 @@ class User(Base):
             "weeklyAnalyticsDigestEnabled": self.weekly_analytics_digest_enabled,
         }
 
-
 class Project(Base):
     __tablename__ = "projects"
 
@@ -62,7 +60,6 @@ class Project(Base):
             "createdAt": self.created_at.isoformat() if self.created_at else None,
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
         }
-
 
 class Task(Base):
     __tablename__ = "tasks"
@@ -92,7 +89,6 @@ class Task(Base):
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
         }
 
-
 class TeamMember(Base):
     __tablename__ = "team_members"
 
@@ -117,7 +113,6 @@ class TeamMember(Base):
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
         }
 
-
 class Notification(Base):
     __tablename__ = "notifications"
 
@@ -141,7 +136,6 @@ class Notification(Base):
             "userId": self.user_id,
             "createdAt": self.created_at.isoformat() if self.created_at else None,
         }
-
 
 class Activity(Base):
     __tablename__ = "activities"

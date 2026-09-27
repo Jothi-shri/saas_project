@@ -448,8 +448,6 @@ export const useSaaSStore = create<SaaSStore>((set, get) => ({
     if (accessToken && user) return;
     const newToken = await authService.refresh();
     if (!newToken) {
-      // No valid session on the backend — drop any stale cached profile
-      // so the UI never renders localStorage data as if authenticated.
       authService.clear();
       persistIsAdminSession(false);
       set({ accessToken: null, user: null, isAdminSession: false });

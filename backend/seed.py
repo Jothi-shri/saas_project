@@ -8,20 +8,16 @@ from sqlalchemy import select, func
 from backend.db.database import SessionLocal
 from backend.db.models import Project, Task, TeamMember, Notification, Activity, User
 
-
 def seed_users(db) -> int:
     return 0
-
 
 def _seed_projects(db) -> int:
     existing = db.scalar(select(func.count()).select_from(Project))
     if existing and existing > 0:
         return 0
-    # Need an owner_id - use first user or fallback to SYSTEM
     from backend.db.models import User
     owner = db.scalars(select(User).limit(1)).first()
     owner_id = owner.id if owner else "USR-SYSTEM"
-    # If no user exists, create a system owner id that will be replaced later
     samples = [
         {"id": "p1", "name": "Atlas CRM", "description": "Customer pipeline and revenue analytics", "status": "active", "revenue": 42000},
         {"id": "p2", "name": "Beacon Launch", "description": "Marketing site and onboarding flow", "status": "planning", "revenue": 18000},
@@ -45,7 +41,6 @@ def _seed_projects(db) -> int:
         created += 1
     db.commit()
     return created
-
 
 def _seed_tasks(db) -> int:
     existing = db.scalar(select(func.count()).select_from(Task))
@@ -83,7 +78,6 @@ def _seed_tasks(db) -> int:
     db.commit()
     return created
 
-
 def _seed_team(db) -> int:
     existing = db.scalar(select(func.count()).select_from(TeamMember))
     if existing and existing > 0:
@@ -111,7 +105,6 @@ def _seed_team(db) -> int:
     db.commit()
     return created
 
-
 def _seed_notifications(db) -> int:
     existing = db.scalar(select(func.count()).select_from(Notification))
     if existing and existing > 0:
@@ -137,7 +130,6 @@ def _seed_notifications(db) -> int:
         created += 1
     db.commit()
     return created
-
 
 def _seed_activities(db) -> int:
     existing = db.scalar(select(func.count()).select_from(Activity))
@@ -167,7 +159,6 @@ def _seed_activities(db) -> int:
     db.commit()
     return created
 
-
 def seed_all(db) -> dict:
     results = {}
     results["projects"] = _seed_projects(db)
@@ -176,7 +167,6 @@ def seed_all(db) -> dict:
     results["notifications"] = _seed_notifications(db)
     results["activities"] = _seed_activities(db)
     return results
-
 
 def main() -> None:
     print("[seed] Seeding PostgreSQL via SQLAlchemy...")
@@ -194,7 +184,6 @@ def main() -> None:
         print("[seed] Done.")
     finally:
         db.close()
-
 
 if __name__ == "__main__":
     main()
