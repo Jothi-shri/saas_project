@@ -110,7 +110,7 @@ PYTHONPATH=. .venv/bin/python backend/seed.py
 
 | Key | Purpose |
 | --- | ------- |
-| `DATABASE_URL` | SQLAlchemy URL, e.g. `postgresql+psycopg2://user:pass@localhost:5432/saas` |
+| `DATABASE_URL` | SQLAlchemy URL, e.g. `postgresql+psycopg://USER:PASSWORD@HOST:PORT/DATABASE` |
 | `JWT_SECRET` / `JWT_ALGORITHM` | signing for access + refresh tokens |
 | `JWT_ACCESS_TTL_HOURS` / `JWT_REFRESH_TTL_HOURS` | token lifetimes |
 | `CORS_ORIGINS` | allowed frontend origins |
