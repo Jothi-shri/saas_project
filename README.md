@@ -1,5 +1,14 @@
 # SaaS Workspace Platform
 
+> **Live demo (production):**
+> - **Frontend:** https://saasproject-app.netlify.app
+> - **Login:** https://saasproject-app.netlify.app/login
+> - **Backend API:** https://saas-project-83ur.onrender.com (`/health`, `/docs`)
+>
+> The deployed Netlify frontend sends API requests to the Render backend via
+> `VITE_API_URL=https://saas-project-83ur.onrender.com` (see `netlify.toml`).
+> The backend allows the Netlify origin via `CORS_ORIGINS`.
+
 Full-stack workspace app for managing **projects, tasks, team members, analytics, notifications, and settings** — with JWT auth, a themed React UI, and a PostgreSQL-backed FastAPI API.
 
 - **Frontend:** React 19 + Vite + Tailwind CSS v4 + Zustand + React Router (`frontend/`)
@@ -110,6 +119,21 @@ PYTHONPATH=. .venv/bin/python backend/seed.py
 | `EMAIL_PROVIDER` / `RESEND_API_KEY` / `MAIL_FROM` | password-reset email delivery |
 
 Frontend proxies `/api` and `/system` to `http://127.0.0.1:8000` in dev and preview (see `frontend/vite.config.js`).
+
+## Production deployment
+
+- **Frontend (Netlify):** build env `VITE_API_URL=https://saas-project-83ur.onrender.com`
+  (set in `netlify.toml` `[build.environment]`; dashboard env vars override it).
+  `frontend/src/api/apiBase.ts` prefixes all `/api` + `/system/auth` calls with
+  `VITE_API_URL`, so the deployed app talks to Render. Empty `VITE_API_URL`
+  keeps local dev on the Vite proxy.
+- **Backend (Render):** set env vars `CORS_ORIGINS=https://saasproject-app.netlify.app`,
+  `FRONTEND_URL=https://saasproject-app.netlify.app`, plus `COOKIE_SECURE=true` /
+  `COOKIE_SAMESITE=none` so the cross-site refresh cookie works with
+  `credentials: "include"`. Local defaults keep `http://localhost:5173` /
+  `http://127.0.0.1:5173` for development.
+- Never commit `.env` files with real secrets; copy from `.env.example` /
+  `frontend/.env.example` (placeholders only).
 
 ## API overview
 

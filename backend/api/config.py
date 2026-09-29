@@ -32,7 +32,10 @@ class Settings:
     refresh_cookie_domain: str | None = os.getenv("COOKIE_DOMAIN") or None
 
     cors_origins: list[str] = [
-        o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",") if o.strip()
+        o.strip() for o in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:5173,http://127.0.0.1:5173,https://saasproject-app.netlify.app",
+        ).split(",") if o.strip()
     ]
     cors_allow_credentials: bool = True
     cors_allow_methods: list[str] = ["*"]
